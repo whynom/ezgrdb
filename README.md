@@ -132,13 +132,14 @@ When we initiate `migrator` we start a version of the database with the player t
 
 For more information on what we're doing, check out the following in the GRDB documentation.
 
-[databse connections](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseconnections)
+1. [databse connections](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseconnections)
 
-[migrations](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/migrations)
+2. [migrations](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/migrations)
 
-[Erase database on schema](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/migrations#The-eraseDatabaseOnSchemaChange-Option)
+3. [Erase database on schema](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/migrations#The-eraseDatabaseOnSchemaChange-Option)
 
-[database schema](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseschema)
+4. [database schema](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseschema)
+
 
 - [ ] What is the method `migrate` that depends on a `dbWriter`?
 - [ ] Is the `registerMigration` method making a new database if a previous one doesn't exist?
