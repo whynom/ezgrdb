@@ -21,4 +21,9 @@ struct EZ_GRDBTests {
         #expect(fetchedProject == insertedProject)
     }
 
+    /// Return an empty, in-memory, `AppDatabase`.
+    private func makeEmptyTestDatabase() throws -> AppDatabase {
+        let dbQueue = try DatabaseQueue(configuration: AppDatabase.makeConfiguration())
+        return try AppDatabase(dbQueue)
+    }
 }

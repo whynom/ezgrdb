@@ -19,10 +19,11 @@ final class AppDatabase: Sendable {
 #endif
         
         migrator.registerMigration("v1") { db in
-            try db.create(table: "player") { t in
+            try db.create(table: "project") { t in
                 t.autoIncrementedPrimaryKey("id")
                 t.column("name", .text).notNull()
-                t.column("score", .integer).notNull()
+                t.column("dueDate", .text).notNull()
+                t.column("priority", .integer).notNull()
             }
         }
         
@@ -31,3 +32,24 @@ final class AppDatabase: Sendable {
     
 }
 
+extension AppDatabase {
+    func saveProject(_ project: inout Project) throws {
+        try dbWriter.write { db in
+            try project.save(db)
+        }
+    }
+    
+}
+
+extension AppDatabase {
+    static func makeConfiguration(_ config: Configuration = Configuration()) -> Configuration {
+        
+        return config
+    }
+}
+
+extension AppDatabase {
+    var reader: any GRDB.DatabaseReader {
+        dbWriter
+    }
+}

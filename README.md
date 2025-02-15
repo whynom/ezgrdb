@@ -53,12 +53,18 @@ struct EZ_GRDBTests {
         #expect(fetchedProject == insertedProject)
     }
 
+    /// Return an empty, in-memory, `AppDatabase`.
+    private func makeEmptyTestDatabase() throws -> AppDatabase {
+        let dbQueue = try DatabaseQueue(configuration: AppDatabase.makeConfiguration())
+        return try AppDatabase(dbQueue)
+    }
+
 }
 ```
 
 This gives some errors having to do with the fact that
 1. We don't have a `Project` model.
-2. We don't have a a database
+2. We don't have a a database and its corresponding methods to make a configuration.
 
 Let's deal with the `Project` model first.
 
@@ -116,10 +122,11 @@ Here we're initializing our database with a `dbWriter` so we can start a `migrat
 #endif
         
         migrator.registerMigration("v1") { db in
-            try db.create(table: "player") { t in
+            try db.create(table: "project") { t in
                 t.autoIncrementedPrimaryKey("id")
                 t.column("name", .text).notNull()
-                t.column("score", .integer).notNull()
+                t.column("dueDate", .text).notNull()
+                t.column("priority", .integer).notNull()
             }
         }
         
@@ -143,3 +150,64 @@ For more information on what we're doing, check out the following in the GRDB do
 
 - [ ] What is the method `migrate` that depends on a `dbWriter`?
 - [ ] Is the `registerMigration` method making a new database if a previous one doesn't exist?
+
+##### Update the `Project` model.
+We need our Project model to get some functionality from certain protocols.
+
+1. Reader
+Add the following in a new extension below our original `AppDatabase` definition.
+
+``` swift
+extension AppDatabase {
+    var reader: any GRDB.DatabaseReader {
+        dbWriter
+    }
+}
+```
+
+Thankfully, we get no errors with this code.
+
+2. Save
+
+Let's put this in an `AppDatbase` extension _between_ our `AppDatabase` definition and the extension we just wrote above.  I'm only following this convention as that's how it's done in the [GRDB Demo App](https://github.com/groue/GRDB.swift/tree/master/Documentation/DemoApps/GRDBDemo) which I'm following pretty closely here.
+
+``` swift
+extension AppDatabase {
+    func saveProject(_ project: inout Project) throws {
+        try dbWriter.write { db in
+            try project.save(db)
+        }
+    }
+    
+}
+```
+
+This does give us a new error!  We have no method `save` for our `Project` type.  We'll add a the `MutablePersistableRecord` to give us this saving function as well as `Codable` and `FetchableRecord`.  A the same time we'll define the columns and `didInsert` method.  Put the following code an extension below the original `Project` definition in the `Project` file we created earlier.
+
+``` swift
+extension Project: Codable, FetchableRecord, MutablePersistableRecord {
+    enum Columns {
+        static let name = Column(CodingKeys.name)
+        static let dueDate = Column(CodingKeys.dueDate)
+        static let priority = Column(CodingKeys.priority)
+    }
+}
+```
+
+- [ ] What do the Codable and FetchableRecord protocols(?) do?  Are they both protocols?
+
+3. Making a configuration
+Add this in another extension on `AppDatabase` we'll put above our extension that defined the `reader` variable.
+
+``` swift
+extension AppDatabase {
+    static func makeConfiguration(_ config: Configuration = Configuration()) -> Configuration {
+        
+        return config
+    }
+}
+```
+
+- [ ] This fails the basic test with the following error
+`Expectation failed: (insertedProject.id → nil) != nil
+// Then the inserted project has an id`.
