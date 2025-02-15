@@ -133,8 +133,11 @@ When we initiate `migrator` we start a version of the database with the player t
 For more information on what we're doing, check out the following in the GRDB documentation.
 
 [databse connections](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseconnections)
+
 [migrations](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/migrations)
+
 [Erase database on schema](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/migrations#The-eraseDatabaseOnSchemaChange-Option)
+
 [database schema](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseschema)
 
 - [ ] What is the method `migrate` that depends on a `dbWriter`?
