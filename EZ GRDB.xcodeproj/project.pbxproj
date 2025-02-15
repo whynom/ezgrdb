@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		87F1F5AB2D6123060031249E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 87F1F5AA2D6123060031249E /* README.md */; };
+		87F1F5AF2D6125A10031249E /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 87F1F5AE2D6125A10031249E /* GRDB */; };
+		87F1F5C02D612D800031249E /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 87F1F5BF2D612D800031249E /* GRDB */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		87F1F57E2D61225E0031249E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +33,7 @@
 		87F1F56C2D61225C0031249E /* EZ GRDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EZ GRDB.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87F1F57D2D61225E0031249E /* EZ GRDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "EZ GRDBTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87F1F5872D61225E0031249E /* EZ GRDBUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "EZ GRDBUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		87F1F5AA2D6123060031249E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87F1F5C02D612D800031249E /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87F1F5AF2D6125A10031249E /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +84,11 @@
 		87F1F5632D61225C0031249E = {
 			isa = PBXGroup;
 			children = (
+				87F1F5AA2D6123060031249E /* README.md */,
 				87F1F56E2D61225C0031249E /* EZ GRDB */,
 				87F1F5802D61225E0031249E /* EZ GRDBTests */,
 				87F1F58A2D61225E0031249E /* EZ GRDBUITests */,
+				87F1F5AD2D6125A10031249E /* Frameworks */,
 				87F1F56D2D61225C0031249E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +101,13 @@
 				87F1F5872D61225E0031249E /* EZ GRDBUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		87F1F5AD2D6125A10031249E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +130,7 @@
 			);
 			name = "EZ GRDB";
 			packageProductDependencies = (
+				87F1F5BF2D612D800031249E /* GRDB */,
 			);
 			productName = "EZ GRDB";
 			productReference = 87F1F56C2D61225C0031249E /* EZ GRDB.app */;
@@ -135,6 +154,7 @@
 			);
 			name = "EZ GRDBTests";
 			packageProductDependencies = (
+				87F1F5AE2D6125A10031249E /* GRDB */,
 			);
 			productName = "EZ GRDBTests";
 			productReference = 87F1F57D2D61225E0031249E /* EZ GRDBTests.xctest */;
@@ -195,6 +215,9 @@
 			);
 			mainGroup = 87F1F5632D61225C0031249E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				87F1F5AC2D6124810031249E /* XCRemoteSwiftPackageReference "GRDB" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 87F1F56D2D61225C0031249E /* Products */;
 			projectDirPath = "";
@@ -212,6 +235,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87F1F5AB2D6123060031249E /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -591,6 +615,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		87F1F5AC2D6124810031249E /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		87F1F5AE2D6125A10031249E /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87F1F5AC2D6124810031249E /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
+		};
+		87F1F5BF2D612D800031249E /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87F1F5AC2D6124810031249E /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 87F1F5642D61225C0031249E /* Project object */;
 }
