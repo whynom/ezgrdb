@@ -1,4 +1,4 @@
-#  <#GRDB the _EZ_ way#>
+# GRDB the _EZ_ way
 
 Here's some stuff
 
