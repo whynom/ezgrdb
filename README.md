@@ -1,6 +1,8 @@
 # GRDB the _EZ_ way
 
-Here's some stuff
+GRDB felt pretty overwhelming when I was first confronted with it, but it also looked very promising.  After _barely_ squeezing the basics out of `Core Data` and `Swift Data` I realized that while they had an easy learning curve, whenever a problem arose it was a big hassle to fix because I didn't know what was going on.
+
+My hopes are that GRDB might be a little more difficult to learn, but in the end, because I understand what is going on, it will be a lot more flexible and fixable.  This repo is an attempt to get a basic understanding of what is going on to get a pretty simple database up and running with some explanation.
 
 ## An app from ground up, step by step
 The motivation for making this app is to build a very simple app similar to the one in the GRDB repo, but step by step to hopefully show what everything is doing.  Hopefully, I, or anyone else, will be able to follow along with this whenever they are setting up a new app and need to get a good GRDB backed persistence model going.
