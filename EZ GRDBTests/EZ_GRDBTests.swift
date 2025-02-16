@@ -6,11 +6,15 @@ import Foundation
 struct EZ_GRDBTests {
 
     @Test func insert() throws {
+        let components = DateComponents(calendar: Calendar.current, year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0)
+        let staticDate = components.date!
+
+        
         // Given an empty database
         let appDatabase = try makeEmptyTestDatabase()
         
         // When we insert a project
-        var insertedProject = Project(name: "Build a house", dueDate: Date(), priority: 1000)
+        var insertedProject = Project(name: "Build a house", dueDate: staticDate, priority: 1000)
         try appDatabase.saveProject(&insertedProject)
         
         // Then the inserted project has an id

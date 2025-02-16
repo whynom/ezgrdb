@@ -5,7 +5,7 @@ GRDB felt pretty overwhelming when I was first confronted with it, but it also l
 My hopes are that GRDB might be a little more difficult to learn, but in the end, because I understand what is going on, it will be a lot more flexible and fixable.  This repo is an attempt to get a basic understanding of what is going on to get a pretty simple database up and running with some explanation.
 
 ## An app from ground up, step by step
-The motivation for making this app is to build a very simple app similar to the one in the GRDB repo, but step by step to hopefully show what everything is doing.  Hopefully, I, or anyone else, will be able to follow along with this whenever they are setting up a new app and need to get a good GRDB backed persistence model going.
+The motivation for making this app is to build a very simple app similar to the one in the GRDB repo, but step by step to show what everything is doing.  Hopefully, I, or anyone else, will be able to follow along with this whenever they are setting up a new app and need to get a good GRDB backed persistence model going.
 
 ### Making a functioning test file 
 Add the following imports to your test file
@@ -30,7 +30,7 @@ While that adds the package to your project, it's still not added to your testin
 Your error is now gone and we can start writing tests.
 
 #### A test for tasks
-I want to show how to save data with a string, a date and a number, so I'm choosing to make a _project_.  Hopefully, we'll be able to attach tasks to that project to show to connect two tables together eventually.
+I want to show how to save data with a string, a date and a number, so I'm choosing to make a _project_.  Hopefully, we'll be able to attach tasks to that project to show how to connect two tables together eventually.
 
 Let's get our first test that inserts a `Project` into our database.
 
@@ -38,11 +38,15 @@ Let's get our first test that inserts a `Project` into our database.
 struct EZ_GRDBTests {
 
     @Test func insert() throws {
+        let components = DateComponents(calendar: Calendar.current, year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0)
+        let staticDate = components.date!
+
+        
         // Given an empty database
         let appDatabase = try makeEmptyTestDatabase()
         
         // When we insert a project
-        var insertedProject = Project(name: "Build a house", dueDate: Date(), priority: 1000)
+        var insertedProject = Project(name: "Build a house", dueDate: staticDate, priority: 1000)
         try appDatabase.saveProject(&insertedProject)
         
         // Then the inserted project has an id
@@ -58,7 +62,6 @@ struct EZ_GRDBTests {
         let dbQueue = try DatabaseQueue(configuration: AppDatabase.makeConfiguration())
         return try AppDatabase(dbQueue)
     }
-
 }
 ```
 
@@ -191,10 +194,15 @@ extension Project: Codable, FetchableRecord, MutablePersistableRecord {
         static let dueDate = Column(CodingKeys.dueDate)
         static let priority = Column(CodingKeys.priority)
     }
+    
+        mutating func didInsert(_ inserted: InsertionSuccess) {
+        id = inserted.rowID
+    }
+
 }
 ```
 
-- [ ] What do the Codable and FetchableRecord protocols(?) do?  Are they both protocols?
+Making `Project` conform to the `Codable` `FetchableRecord` and `MutablePersistableRecord` allow the storing and reading of the model into SQLite rows.
 
 3. Making a configuration
 Add this in another extension on `AppDatabase` we'll put above our extension that defined the `reader` variable.
@@ -208,6 +216,7 @@ extension AppDatabase {
 }
 ```
 
-- [ ] This fails the basic test with the following error
-`Expectation failed: (insertedProject.id → nil) != nil
-// Then the inserted project has an id`.
+#### What we've done
+At this point the tests pass!
+
+This is extremely minimal, but we can now make a database, add to it, and read from it.  Not bad!

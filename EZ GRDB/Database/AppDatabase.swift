@@ -22,7 +22,7 @@ final class AppDatabase: Sendable {
             try db.create(table: "project") { t in
                 t.autoIncrementedPrimaryKey("id")
                 t.column("name", .text).notNull()
-                t.column("dueDate", .text).notNull()
+                t.column("dueDate", .date).notNull()
                 t.column("priority", .integer).notNull()
             }
         }

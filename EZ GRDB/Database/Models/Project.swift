@@ -15,7 +15,7 @@ extension Project: Codable, FetchableRecord, MutablePersistableRecord {
         static let priority = Column(CodingKeys.priority)
     }
     
-//    mutating func didInsert(_ inserted: InsertionSuccess) {
-//        id = inserted.rowID
-//    }
+    mutating func didInsert(_ inserted: InsertionSuccess) {
+        id = inserted.rowID
+    }
 }
