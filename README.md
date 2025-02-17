@@ -62,6 +62,12 @@ struct EZ_GRDBTests {
         let dbQueue = try DatabaseQueue(configuration: AppDatabase.makeConfiguration())
         return try AppDatabase(dbQueue)
     }
+    
+    private func staticDate() -> Date {
+        let components = DateComponents(calendar: Calendar.current, year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0)
+        return components.date!
+    }
+
 }
 ```
 
@@ -220,3 +226,5 @@ extension AppDatabase {
 At this point the tests pass!
 
 This is extremely minimal, but we can now make a database, add to it, and read from it.  Not bad!
+
+## Part 2:
