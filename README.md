@@ -38,15 +38,11 @@ Let's get our first test that inserts a `Project` into our database.
 struct EZ_GRDBTests {
 
     @Test func insert() throws {
-        let components = DateComponents(calendar: Calendar.current, year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0)
-        let staticDate = components.date!
-
-        
         // Given an empty database
         let appDatabase = try makeEmptyTestDatabase()
         
         // When we insert a project
-        var insertedProject = Project(name: "Build a house", dueDate: staticDate, priority: 1000)
+        var insertedProject = Project(name: "Build a house", dueDate: staticDate(), priority: 1000)
         try appDatabase.saveProject(&insertedProject)
         
         // Then the inserted project has an id
@@ -227,4 +223,32 @@ At this point the tests pass!
 
 This is extremely minimal, but we can now make a database, add to it, and read from it.  Not bad!
 
-## Part 2:
+## Updating
+Put the following test into the `EZ_GRDBTests` struct scope
+
+``` swift
+struct EZ_GRDBTests {
+...
+    @Test func update() throws {
+        // Given a database that contains a player
+        let appDatabase = try makeEmptyTestDatabase()
+        var insertedProject = Project(name: "Build a house", dueDate: staticDate(), priority: 1000)
+        try appDatabase.saveProject(&insertedProject)
+        
+        // When we update a player
+        var updatedProject = insertedProject
+        updatedProject.name = "Write a book"
+        updatedProject.dueDate = staticDate().addingTimeInterval(86400)
+        updatedProject.priority = 500
+        try appDatabase.saveProject(&updatedProject)
+        
+        // Then the player is updated
+        let fetchedProject = try appDatabase.reader.read(Project.fetchOne)
+        #expect(fetchedProject == updatedProject)
+    }
+...
+}
+```
+
+Test passes!
+
