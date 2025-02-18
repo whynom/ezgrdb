@@ -32,15 +32,8 @@ final class AppDatabase: Sendable {
     
 }
 
-extension AppDatabase {
-    func saveProject(_ project: inout Project) throws {
-        try dbWriter.write { db in
-            try project.save(db)
-        }
-    }
-    
-}
 
+// MARK: - Database Configuration
 extension AppDatabase {
     static func makeConfiguration(_ config: Configuration = Configuration()) -> Configuration {
         
@@ -48,6 +41,23 @@ extension AppDatabase {
     }
 }
 
+// MARK: - Database Access: Writes
+extension AppDatabase {
+    func saveProject(_ project: inout Project) throws {
+        try dbWriter.write { db in
+            try project.save(db)
+        }
+    }
+    
+    func deleteAllProjects() throws {
+        try dbWriter.write { db in
+            _ = try Project.deleteAll(db)
+        }
+    }
+
+}
+
+// MARK: - Database Access: Reads
 extension AppDatabase {
     var reader: any GRDB.DatabaseReader {
         dbWriter

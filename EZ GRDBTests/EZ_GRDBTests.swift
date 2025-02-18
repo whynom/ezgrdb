@@ -39,6 +39,20 @@ struct EZ_GRDBTests {
         #expect(fetchedProject == updatedProject)
     }
     
+    @Test func deleteAll() throws {
+        // Given a database that contains a player
+        let appDatabase = try makeEmptyTestDatabase()
+        var project = Project(name: "Build a house", dueDate: staticDate(), priority: 1000)
+        try appDatabase.saveProject(&project)
+        
+        // When we delete all players
+        try appDatabase.deleteAllProjects()
+        
+        // Then no player exists
+        let count = try appDatabase.reader.read(Project.fetchCount(_:))
+        #expect(count == 0)
+    }
+
     /// Return an empty, in-memory, `AppDatabase`.
     private func makeEmptyTestDatabase() throws -> AppDatabase {
         let dbQueue = try DatabaseQueue(configuration: AppDatabase.makeConfiguration())

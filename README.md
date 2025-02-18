@@ -5,9 +5,9 @@ GRDB felt pretty overwhelming when I was first confronted with it, but it also l
 My hopes are that GRDB might be a little more difficult to learn, but in the end, because I understand what is going on, it will be a lot more flexible and fixable.  This repo is an attempt to get a basic understanding of what is going on to get a pretty simple database up and running with some explanation.
 
 ## An app from ground up, step by step
-The motivation for making this app is to build a very simple app similar to the one in the GRDB repo, but step by step to show what everything is doing.  Hopefully, I, or anyone else, will be able to follow along with this whenever they are setting up a new app and need to get a good GRDB backed persistence model going.
+The motivation for making this app is to build a very simple app like the [GRDB Demo App](https://github.com/groue/GRDB.swift/tree/master/Documentation/DemoApps/GRDBDemo), but step by step to show what everything is doing as well extending it a little bit with things like `Date`s and connecting various models together.  Hopefully, I, or anyone else, will be able to follow along with this whenever they are setting up a new app and need to get a good GRDB backed persistence model going.
 
-### Making a functioning test file 
+## Making a functioning test file 
 Add the following imports to your test file
 
 ``` swift
@@ -28,8 +28,8 @@ Enter the github url for the package in the search bar and install https://githu
 While that adds the package to your project, it's still not added to your testing target.  Go into the app project and add it under `Frameworks and Libraries` for your testing target.
 
 Your error is now gone and we can start writing tests.
-
-#### A test for tasks
+    
+### A test for tasks
 I want to show how to save data with a string, a date and a number, so I'm choosing to make a _project_.  Hopefully, we'll be able to attach tasks to that project to show how to connect two tables together eventually.
 
 Let's get our first test that inserts a `Project` into our database.
@@ -72,9 +72,9 @@ This gives some errors having to do with the fact that
 2. We don't have a a database and its corresponding methods to make a configuration.
 
 Let's deal with the `Project` model first.
-
-##### Project model
-Within our top app directory add a directory called `Database`. Within that folder make another folder called `Models`.  Finally, within that `Models` add a swift file called `Project`.  Add the following to that file.
+    
+### Project model
+Within our top app directory add a directory called `Database`. Within that folder make another folder called `Models`.  Finally, within that `Models` directry add a swift file called `Project`.  Add the following to that file.
 
 ``` swift
 import Foundation
@@ -92,7 +92,7 @@ A simple straightforward model to use to make and use `Project`s, and we've take
 - [ ] Explain why `Equatable`.
 - [ ] Explain why the id is an optional.
 
-##### AppDatabase
+### AppDatabase
 Now more to the point, we're going to start defining the actual database.  The two spots we're failing in our test is in the _making_ of the database and the _reading_ of the database.  Let's see if we can't fix those problems.
 
 Let's add a new swift file to the `Database` folder called `AppDatabase` and within that file add the following code.
@@ -140,7 +140,7 @@ Here we're initializing our database with a `dbWriter` so we can start a `migrat
 ...
 ```
 
-When we initiate `migrator` we start a version of the database with the player table.  We can later add more versions of this table or even add new tables to our database later to update our app as we update it's capabilites.
+When we initiate `migrator` we start a version of the database with the player table.  We can later add more versions of this table or even add new tables to our database later to update our app as we update it's capabilities.
 
 For more information on what we're doing, check out the following in the GRDB documentation.
 
@@ -156,13 +156,26 @@ For more information on what we're doing, check out the following in the GRDB do
 - [ ] What is the method `migrate` that depends on a `dbWriter`?
 - [ ] Is the `registerMigration` method making a new database if a previous one doesn't exist?
 
-##### Update the `Project` model.
-We need our Project model to get some functionality from certain protocols.
+### Config, Read and Save.
 
-1. Reader
-Add the following in a new extension below our original `AppDatabase` definition.
+1. Making a configuration
+We're going to add an extension on `AppDatabase` below our prior definition of the class.  I'm making this an extension as this is how they made GRDB demo app. I believe it makes the code more organized and easier to understand.
 
 ``` swift
+// MARK: - Database Configuration
+extension AppDatabase {
+    static func makeConfiguration(_ config: Configuration = Configuration()) -> Configuration {
+        
+        return config
+    }
+}
+```
+
+2. Reader
+Add the following in a new extension below our configuration `AppDatabase` extension.
+
+``` swift
+// MARK: - Database Configuration
 extension AppDatabase {
     var reader: any GRDB.DatabaseReader {
         dbWriter
@@ -172,11 +185,12 @@ extension AppDatabase {
 
 Thankfully, we get no errors with this code.
 
-2. Save
+3. Save
 
-Let's put this in an `AppDatbase` extension _between_ our `AppDatabase` definition and the extension we just wrote above.  I'm only following this convention as that's how it's done in the [GRDB Demo App](https://github.com/groue/GRDB.swift/tree/master/Documentation/DemoApps/GRDBDemo) which I'm following pretty closely here.
+   [GRDB Demo App](https://github.com/groue/GRDB.swift/tree/master/Documentation/DemoApps/GRDBDemo) which I'm following pretty closely here.
 
 ``` swift
+// MARK: - Database Access: Reads
 extension AppDatabase {
     func saveProject(_ project: inout Project) throws {
         try dbWriter.write { db in
@@ -187,7 +201,9 @@ extension AppDatabase {
 }
 ```
 
-This does give us a new error!  We have no method `save` for our `Project` type.  We'll add a the `MutablePersistableRecord` to give us this saving function as well as `Codable` and `FetchableRecord`.  A the same time we'll define the columns and `didInsert` method.  Put the following code an extension below the original `Project` definition in the `Project` file we created earlier.
+### Update the `Project` model.
+
+Let's try to fix some of our errors.  We have no method `save` for our `Project` type.  We'll add a the `MutablePersistableRecord` to give us this saving function as well as `Codable` and `FetchableRecord`.  A the same time we'll define the columns and `didInsert` method.  Put the following code an extension below the original `Project` definition in the `Project` file we created earlier.
 
 ``` swift
 extension Project: Codable, FetchableRecord, MutablePersistableRecord {
@@ -206,24 +222,13 @@ extension Project: Codable, FetchableRecord, MutablePersistableRecord {
 
 Making `Project` conform to the `Codable` `FetchableRecord` and `MutablePersistableRecord` allow the storing and reading of the model into SQLite rows.
 
-3. Making a configuration
-Add this in another extension on `AppDatabase` we'll put above our extension that defined the `reader` variable.
 
-``` swift
-extension AppDatabase {
-    static func makeConfiguration(_ config: Configuration = Configuration()) -> Configuration {
-        
-        return config
-    }
-}
-```
-
-#### What we've done
+### What we've done
 At this point the tests pass!
 
 This is extremely minimal, but we can now make a database, add to it, and read from it.  Not bad!
 
-## Updating
+### Updating test.
 Put the following test into the `EZ_GRDBTests` struct scope
 
 ``` swift
@@ -252,3 +257,45 @@ struct EZ_GRDBTests {
 
 Test passes!
 
+### Delete all
+Let's make a test for deleting all `Project`s.  Add the following to the `EZ_GRDBTests` struct we've been putting all our tests in.
+
+``` swift
+struct EZ_GRDBTests {
+...
+    @Test func deleteAll() throws {
+        // Given a database that contains a player
+        let appDatabase = try makeEmptyTestDatabase()
+        var project = Project(name: "Build a house", dueDate: staticDate(), priority: 1000)
+        try appDatabase.saveProject(&project)
+        
+        // When we delete all players
+        try appDatabase.deleteAllProjects()
+        
+        // Then no player exists
+        let count = try appDatabase.reader.read(Project.fetchCount(_:))
+        #expect(count == 0)
+    }
+...
+}
+```
+
+This will give us an error about `AppDatabase` not having a `deleteAllProjects` function as we haven't defined it yet.  Let's do that now.
+
+We'll put the following function in the writes `AppDatabase` extension.
+
+``` swift
+// MARK: - Database Access: Writes
+extension AppDatabase {
+...
+    func deleteAllProjects() throws {
+        try dbWriter.write { db in
+            _ = try Project.deleteAll(db)
+        }
+    }
+
+}
+```
+
+### `EZ_GRDBTests` finished
+We've finished up all our tests for the basic functionality of our GRDB database.  We've got tests and functions that allow us to make a database, add a row, update a row and delete all the contents of a database.  Now we're going to start building the user interface with `SwiftUI` and connecting our database to that so that our app will be usable.
