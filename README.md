@@ -322,7 +322,7 @@ struct EZ_GRDBApp: App {
 This will give an error about `ProjectsNavigationView` not existing because it doesn't, so let's start building that top level `View`
 
 ### `ProjectsNavigationView`
-Let's start by making a `Views` folder within our main app folder.  Then we'll make a new `SwiftUI` file in that `Views` folder and add the following code.
+Let's start by making a `Views` folder within our main app folder.  Then we'll make a new `SwiftUI` file in that `Views` folder named `ProjectsNavigationView` and add the following code.
 
 ``` swift
 import SwiftUI
@@ -353,7 +353,77 @@ struct ProjectsNavigationView: View {
 
 This gives a pretty little view that shows we don't have any projects... yet.  Nothing much, but it's a start.
 
-#### 
+#### A `View` for creating a project
+We're going to make a `ProjectFormView` for creating and editing `Project`s.  I'm just going to add all the code with no explanation because it's all `SwiftUI` and I'm not trying to explain or figure out `SwiftUI`.  Just slap this code in a new file you put in your `Views` folder with the name `ProjectFormView`.
+
+``` swift
+import SwiftUI
+
+struct ProjectFormView: View {
+    @Binding var form: ProjectForm
+    
+    private enum FocusElement {
+        case name
+        case dueDate
+        case priority
+    }
+    @FocusState private var focusedElement: FocusElement?
+
+    var body: some View {
+        Group {
+            LabeledContent {
+                TextField(text: $form.name) { EmptyView() }
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled()
+                    .submitLabel(.next)
+                    .focused($focusedElement, equals: .name)
+                    .labelsHidden()
+                    .onSubmit {
+                        focusedElement = .name
+                    }
+            } label: {
+                Text("Name").foregroundStyle(.secondary)
+            }
+            
+            LabeledContent {
+                DatePicker("Due Date", selection: $form.dueDate)
+                    .focused($focusedElement, equals: .dueDate)
+                    .labelsHidden()
+            } label: {
+                Text("Due").foregroundStyle(.secondary)
+            }
+            
+            LabeledContent {
+                Picker("Select a Number", selection: $form.priority) {
+                    ForEach(1...5, id: \.self) { number in
+                        Text("\(number)").tag(number)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+
+            } label: {
+                Text("Priority").foregroundStyle(.secondary)
+            }
+        }
+        .onAppear { focusedElement = .name }
+    }
+}
+
+struct ProjectForm {
+    var name: String
+    var dueDate: Date
+    var priority: Int
+    
+}
+
+#Preview("Prefilled") {
+    @Previewable @State var form = ProjectForm(name: "Build a house", dueDate: .now.addingTimeInterval(240000), priority: 3)
+    
+    Form {
+        ProjectFormView(form: $form)
+    }
+}
+```
 
 
 
