@@ -299,3 +299,113 @@ extension AppDatabase {
 
 ### `EZ_GRDBTests` finished
 We've finished up all our tests for the basic functionality of our GRDB database.  We've got tests and functions that allow us to make a database, add a row, update a row and delete all the contents of a database.  Now we're going to start building the user interface with `SwiftUI` and connecting our database to that so that our app will be usable.
+
+## Setting up the user interface
+You can't have an app without an interface, so let's start with our main app file.
+
+### App top level View
+The boilerplate code that was given to us when we made the project works with one small change.  We're going to replace `ContentView()` with  `ProjectsNavigationView().appDatabase(.shared)`.  The top of your `EZGRDBApp` file should have this struct above the code we just added previously.
+
+``` swift
+import SwiftUI
+
+@main
+struct EZ_GRDBApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ProjectsNavigationView()
+        }
+    }
+}
+```
+
+This will give an error about `ProjectsNavigationView` not existing because it doesn't, so let's start building that top level `View`
+
+### `ProjectsNavigationView`
+Let's start by making a `Views` folder within our main app folder.  Then we'll make a new `SwiftUI` file in that `Views` folder and add the following code.
+
+``` swift
+import SwiftUI
+
+struct ProjectsNavigationView: View {
+    @State var presentsCreationSheet = false
+
+    var body: some View {
+        emptyProjectsView
+    }
+    
+    private var emptyProjectsView: some View {
+        ContentUnavailableView {
+            Label("No Projects... yet", systemImage: "square.3.layers.3d.slash")
+        } actions: {
+            Button("Add Project") {
+                presentsCreationSheet = true
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+}
+
+#Preview {
+    ProjectsNavigationView()
+}
+```
+
+This gives a pretty little view that shows we don't have any projects... yet.  Nothing much, but it's a start.
+
+#### 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Starting with an empty database at launch
+
+Let's add this to our `EZ_GRDPApp` file
+
+``` swift
+// MARK: - Give SwiftUI access to the database
+
+extension EnvironmentValues {
+    @Entry var appDatabase = AppDatabase.empty()
+}
+```
+
+This gives an error because we don't have an `empty` method defined on the `AppDatabase` type.  Let's do that now.
+
+Rotely following the GRDBDemo app, we're going to put this in our `Persistance` file we will make now within our `Database` directory. In this new file put the following.
+
+``` swift
+extension AppDatabase {
+    /// Creates an empty database for SwiftUI previews
+    static func empty() -> AppDatabase {
+        // Connect to an in-memory database
+        let dbQueue = try! DatabaseQueue(configuration: AppDatabase.makeConfiguration())
+        return try! AppDatabase(dbQueue)
+    }
+}
+```
+
+We're making a `DatabaseQueue` because it supports in-app memory databases which is what we're loading up here.  For information read [Database Connections](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseconnections) in the documentation.
+
+Now we're also going to make a method on the `View` type so that we can inject the database information into our top level view and have it available to all its child views throughout the app.
+
+``` swift
+extension View {
+    func appDatabase(_ appDatabase: AppDatabase) -> some View {
+        self.environment(\.appDatabase, appDatabase)
+    }
+}
+```
+
+We add this with no error or complaints from XCode and we have an environment variable that accesses our database at all levels of our app.
