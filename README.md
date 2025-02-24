@@ -301,10 +301,10 @@ extension AppDatabase {
 We've finished up all our tests for the basic functionality of our GRDB database.  We've got tests and functions that allow us to make a database, add a row, update a row and delete all the contents of a database.  Now we're going to start building the user interface with `SwiftUI` and connecting our database to that so that our app will be usable.
 
 ## Setting up the user interface
-You can't have an app without an interface, so let's start with our main app file.
+You can't have an app without an interface, so let's start with our main app file.  There's going to be a lot of SwiftUI involved with little or no explanation because I'm mainly focused on the database. 
 
 ### App top level View
-The boilerplate code that was given to us when we made the project works with one small change.  We're going to replace `ContentView()` with  `ProjectsNavigationView().appDatabase(.shared)`.  The top of your `EZGRDBApp` file should have this struct above the code we just added previously.
+The boilerplate code that was given to us when we made the project works with one small change.  We're going to replace `ContentView()` with  `ProjectsNavigationView()`.  Replace `ContentView()` with  `ProjectsNavigationView()` and your main app file should look like the following.
 
 ``` swift
 import SwiftUI
@@ -354,7 +354,7 @@ struct ProjectsNavigationView: View {
 This gives a pretty little view that shows we don't have any projects... yet.  Nothing much, but it's a start.
 
 #### A `View` for creating a project
-We're going to make a `ProjectFormView` for creating and editing `Project`s.  I'm just going to add all the code with no explanation because it's all `SwiftUI` and I'm not trying to explain or figure out `SwiftUI`.  Just slap this code in a new file you put in your `Views` folder with the name `ProjectFormView`.
+We're going to make a `ProjectFormView` for creating and editing `Project`s.  I'm just going to add all the code with no explanation because it's all SwiftUI.  Just slap this code in a new file you put in your `Views` folder with the name `ProjectFormView`.
 
 ``` swift
 import SwiftUI
@@ -425,10 +425,28 @@ struct ProjectForm {
 }
 ```
 
+### Form in `ProjectsNavigationView`
+Now we have to connect the two.  Add a `State` binding within `ProjectsNavigationView`, and `sheet` method onto the `ContentUnavailableView`
+
+``` swift
+struct ProjectsNavigationView: View {
+    @State var presentsCreationSheet = false
+    @State var form = ProjectForm(name: "", dueDate: Date(), priority: 1)
+...
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .sheet(isPresented: $presentsCreationSheet) {
+            ProjectFormView(form: $form)
+        }
+    }
+...
+```
 
 
+This gives us the form popping up whene we hit the "Add Project" button.
 
-
+### `ProjectCreationSheet`
 
 
 
