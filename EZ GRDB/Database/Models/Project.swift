@@ -19,3 +19,10 @@ extension Project: Codable, FetchableRecord, MutablePersistableRecord {
         id = inserted.rowID
     }
 }
+
+struct ProjectTestable: Equatable {
+    var id = UUID()
+    var name: String
+    var dueDate: Date
+    var priority: Int
+}

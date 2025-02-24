@@ -483,6 +483,10 @@ This gives us our creation sheet, but we need to connect that with our `Projects
 
 So there we are with a considerable amount of UI under our belt, but what if we did have some `Project`s to show?  Where would we see them?  So far we only have a view for no projects.  Let's build our actual list of projects now.
 
+### `ProjectListView`
+We're going to make our list view that shows all our projects. It won't be connected to a database yet but we'll get to see our UI before diving into how to access a database. Create a new file in our `View` folder and call it `ProjectListView`
+
+
 
 
 
