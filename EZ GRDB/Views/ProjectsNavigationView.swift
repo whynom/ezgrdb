@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ProjectsNavigationView: View {
     @State var presentsCreationSheet = false
-    @State var form = ProjectForm(name: "", dueDate: Date(), priority: 1)
 
     var body: some View {
         emptyProjectsView
@@ -18,7 +17,7 @@ struct ProjectsNavigationView: View {
             .buttonStyle(.borderedProminent)
         }
         .sheet(isPresented: $presentsCreationSheet) {
-            ProjectFormView(form: $form)
+            ProjectCreationSheet()
         }
     }
 }

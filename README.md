@@ -425,32 +425,63 @@ struct ProjectForm {
 }
 ```
 
-### Form in `ProjectsNavigationView`
-Now we have to connect the two.  Add a `State` binding within `ProjectsNavigationView`, and `sheet` method onto the `ContentUnavailableView`
+### `ProjectCreationSheet`
+We have a form, but what we really want is a something that houses that form and has save button and all that.  The form was just the inner part of the creation sheet.  Let's make a new `ProjectCreationSheet` file and put it in our `Views` folder.  Add this to that new file.
 
 ``` swift
-struct ProjectsNavigationView: View {
-    @State var presentsCreationSheet = false
+import SwiftUI
+
+/// A view that creates a `Player`. Display it as a sheet.
+struct ProjectCreationSheet: View {
+    @Environment(\.dismiss) var dismiss
     @State var form = ProjectForm(name: "", dueDate: Date(), priority: 1)
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                ProjectFormView(form: $form)
+            }
+            .navigationTitle("New Project")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        save()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func save() {
+        dismiss()
+    }
+}
+
+// MARK: - Previews
+
+#Preview {
+    ProjectCreationSheet()
+}
+```
+
+This gives us our creation sheet, but we need to connect that with our `ProjectsNavigationView`.  This can be done by adding a `sheet` method onto our `emptyProjectsView` in our `ProjectsNavigationView` as follows.
+
+``` swift
 ...
             }
             .buttonStyle(.borderedProminent)
         }
         .sheet(isPresented: $presentsCreationSheet) {
-            ProjectFormView(form: $form)
+            ProjectCreationSheet()
         }
     }
 ...
 ```
 
-
-This gives us the form popping up whene we hit the "Add Project" button.
-
-### `ProjectCreationSheet`
-
-
-
-
+So there we are with a considerable amount of UI under our belt, but what if we did have some `Project`s to show?  Where would we see them?  So far we only have a view for no projects.  Let's build our actual list of projects now.
 
 
 
@@ -493,7 +524,7 @@ extension View {
     func appDatabase(_ appDatabase: AppDatabase) -> some View {
         self.environment(\.appDatabase, appDatabase)
     }
-}
+
 ```
 
 We add this with no error or complaints from XCode and we have an environment variable that accesses our database at all levels of our app.
