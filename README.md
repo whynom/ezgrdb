@@ -651,4 +651,36 @@ extension View {
     }
 ```
 
-### 
+### `ProjectsNavigationView`
+This is where I wan to build the minimal version of this view, and add in all the smaller views first, then have the whole `ProjectsNavigationView` start coming together as I build those.
+
+`ProjectsNavigationView`
+
+``` swift
+import SwiftUI
+
+/// The main navigation view.
+struct PlayersNavigationView: View {
+    @Environment(\.appDatabase) var appDatabase
+    
+    var body: some View {
+        // This technique makes it possible to create an observable object
+        // (PlayerListModel) from the SwiftUI environment.
+        ContentView(appDatabase: appDatabase)
+    }
+}
+
+private struct ContentView: View {
+    @State var model: ProjectListModel
+
+    init(appDatabase: AppDatabase) {
+        _model = State(initialValue: ProjectListModel(appDatabase: appDatabase))
+    }
+    
+    var body: some View {
+        Text("Hello, World!")
+    }
+}
+```
+
+This builds.
