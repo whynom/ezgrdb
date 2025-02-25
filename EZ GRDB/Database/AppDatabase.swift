@@ -54,6 +54,22 @@ extension AppDatabase {
             _ = try Project.deleteAll(db)
         }
     }
+    
+    /// Create random projects if the database is empty.
+    func createRandomProjectsIfEmpty() throws {
+        try dbWriter.write { db in
+            if try Project.all().isEmpty(db) {
+                try createRandomProjects(db)
+            }
+        }
+    }
+    
+    /// Support for `createRandomProjectsIfEmpty()` and `refreshPlayers()`.
+    private func createRandomProjects(_ db: Database) throws {
+        for _ in 0..<8 {
+            _ = try Project.makeRandom().inserted(db)
+        }
+    }
 
 }
 

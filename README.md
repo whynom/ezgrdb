@@ -520,3 +520,135 @@ Let's add the methods we need to the end `PlayerListModel` and mark the section 
 ```
 
 We are passing all the tests now.  I really want to note that I did _not_ put in all the other methods into the `PlayerListModel`.  These methods just take wahtever database you gave the `PlayerListModel` you made and runs the methods that we described in the `AppDatabase` that we made.  I guess they're kind of wrappers so we can deal with `PlayerListModel` without having to fuss with the `AppDatabase` directly.
+
+### `Persistence`
+This is actually relatively straightforward.  Just an extension on `AppDatabase` that actually makes the database or loads it if it's already there.  It'll also make some random projects for testing purposes if the database is empty upon loading or creating.
+
+``` swift
+import Foundation
+import GRDB
+
+extension AppDatabase {
+    static let shared = makeShared()
+    
+    private static func makeShared() -> AppDatabase {
+        do {
+            // Create the "Application Support/Database" directory if needed
+            let fileManager = FileManager.default
+            let appSupportURL = try fileManager.url(
+                for: .applicationSupportDirectory, in: .userDomainMask,
+                appropriateFor: nil, create: true)
+            let directoryURL = appSupportURL.appendingPathComponent("Database", isDirectory: true)
+            try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+            
+            // Open or create the database
+            let databaseURL = directoryURL.appendingPathComponent("db.sqlite")
+            let config = AppDatabase.makeConfiguration()
+            let dbPool = try DatabasePool(path: databaseURL.path, configuration: config)
+            
+            // Create the AppDatabase
+            let appDatabase = try AppDatabase(dbPool)
+            
+            // Populate the database if it is empty, for better demo purpose.
+            try appDatabase.createRandomProjectsIfEmpty()
+            
+            return appDatabase
+        } catch {
+            fatalError("Unresolved error \(error)")
+        }
+    }
+    
+    /// Creates an empty database for SwiftUI previews
+    static func empty() -> AppDatabase {
+        let dbQueue = try! DatabaseQueue(configuration: AppDatabase.makeConfiguration())
+        return try! AppDatabase(dbQueue)
+    }
+    
+    /// Creates a database full of random players for SwiftUI previews
+    static func random() -> AppDatabase {
+        let appDatabase = empty()
+        try! appDatabase.createRandomProjectsIfEmpty()
+        return appDatabase
+    }
+
+}
+```
+
+The problme we run into is we don't have the `createRandomProjectsIfEmpty` method defined.  We'll define it in the `AppDatabase` file.
+
+### `createRandomProjectsIfEmpty` and `createRandomProjects`
+We slap the the following two functions into our `AppDatabase` file in the extension under writes.  put it right after `deleteAllProjects`.
+
+``` swift
+    /// Create random projects if the database is empty.
+    func createRandomProjectsIfEmpty() throws {
+        try dbWriter.write { db in
+            if try Project.all().isEmpty(db) {
+                try createRandomProjects(db)
+            }
+        }
+    }
+    
+    /// Support for `createRandomProjectsIfEmpty()` and `refreshPlayers()`.
+    private func createRandomProjects(_ db: Database) throws {
+        for _ in 0..<8 {
+            _ = try Project.makeRandom().inserted(db)
+        }
+    }
+```
+
+We're not quite done yet.  We need to add the `makeRandom` method to the `Project` type.  We add this new extension right below the original definition of `Project`
+
+``` swift
+extension Project {
+    private static let names = [
+        "Todo List", "Weather App", "Calculator", "Recipe Finder", "Chat Application", "Expense Tracker", "Fitness Tracker", "Music Player", "Photo Gallery", "Game Scoreboard", "Currency Converter", "News Aggregator", "Language Learning Tool", "Memory Game", "Travel Planner"
+    ]
+
+    
+    /// Creates a new project with random name and random score
+    static func makeRandom() -> Project {
+        Project(id: nil, name: randomName(), dueDate: randomDate(), priority: Int.random(in: 1...5))
+    }
+    
+    /// Returns a random name
+    static func randomName() -> String {
+        names.randomElement()!
+    }
+    
+    /// Returns a random score
+    static func randomDate() -> Date {
+        Date().addingTimeInterval(Double.random(in: -99999...99999999))
+    }
+}
+```
+Our `Persistance` file is all taken care of.
+
+## The `EZ_GRDBApp` file
+Now that we have the database more or less completely functioning, we can start building the app.
+
+``` swift
+import SwiftUI
+
+@main
+struct EZ_GRDBApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ProjectsNavigationView().appDatabase(.shared)
+        }
+    }
+}
+
+// MARK: - Give SwiftUI access to the database
+
+extension EnvironmentValues {
+    @Entry var appDatabase = AppDatabase.empty()
+}
+
+extension View {
+    func appDatabase(_ appDatabase: AppDatabase) -> some View {
+        self.environment(\.appDatabase, appDatabase)
+    }
+```
+
+### 
