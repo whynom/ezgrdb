@@ -19,3 +19,23 @@ extension Project: Codable, FetchableRecord, MutablePersistableRecord {
         id = inserted.rowID
     }
 }
+
+private typealias Columns = Project.Columns
+
+extension DerivableRequest<Project> {
+    func orderedByName() -> Self {
+        order(Columns.name.collating(.localizedCaseInsensitiveCompare))
+    }
+    
+    func orderedByDueDate() -> Self {
+        order(
+            Columns.dueDate.desc,
+            Columns.dueDate.collating(.localizedCaseInsensitiveCompare))
+    }
+    
+    func orderedByPriority() -> Self {
+        order(
+            Columns.priority.desc,
+            Columns.priority.collating(.localizedCaseInsensitiveCompare))
+    }
+}
