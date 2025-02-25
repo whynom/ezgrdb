@@ -49,6 +49,13 @@ extension AppDatabase {
         }
     }
     
+    /// Delete the specified projects
+    func deleteProjects(ids: [Int64]) throws {
+        try dbWriter.write { db in
+            _ = try Project.deleteAll(db, keys: ids)
+        }
+    }
+
     func deleteAllProjects() throws {
         try dbWriter.write { db in
             _ = try Project.deleteAll(db)

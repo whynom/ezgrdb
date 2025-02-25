@@ -48,6 +48,12 @@ import GRDB
     
     
     // MARK: - Actions
+    /// Delete players at specified indexes in `self.players`.
+    func deleteProjects(at offsets: IndexSet) throws {
+        let projectIds = offsets.compactMap { projects[$0].id }
+        try appDatabase.deleteProjects(ids: projectIds)
+    }
+
     /// Delete all projects.
     func deleteAllProjects() throws {
         try appDatabase.deleteAllProjects()
