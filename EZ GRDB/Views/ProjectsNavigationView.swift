@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// The main navigation view.
-struct PlayersNavigationView: View {
+struct ProjectsNavigationView: View {
     @Environment(\.appDatabase) var appDatabase
     
     var body: some View {
